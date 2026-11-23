@@ -13,6 +13,7 @@ use core::fmt::Write;
 use rushdown::as_extension_data;
 use rushdown::ast::pp_indent;
 use rushdown::ast::Arena;
+use rushdown::ast::InlineChars;
 use rushdown::ast::KindData;
 use rushdown::ast::NodeKind;
 use rushdown::ast::NodeRef;
@@ -97,6 +98,8 @@ impl NodeKind for Emoji {
         "Emoji"
     }
 }
+
+impl InlineChars for Emoji {}
 
 impl PrettyPrint for Emoji {
     fn pretty_print(&self, w: &mut dyn Write, _source: &str, level: usize) -> fmt::Result {
@@ -206,15 +209,13 @@ impl RendererOptions for EmojiHtmlRendererOptions {}
 
 struct EmojiHtmlRenderer<W: TextWrite> {
     _phantom: core::marker::PhantomData<W>,
-    writer: html::Writer,
     options: EmojiHtmlRendererOptions,
 }
 
 impl<W: TextWrite> EmojiHtmlRenderer<W> {
-    fn new(html_opts: html::Options, options: EmojiHtmlRendererOptions) -> Self {
+    fn new(options: EmojiHtmlRendererOptions) -> Self {
         Self {
             _phantom: core::marker::PhantomData,
-            writer: html::Writer::with_options(html_opts),
             options,
         }
     }
@@ -242,9 +243,9 @@ impl<W: TextWrite> RenderNode<W> for EmojiHtmlRenderer<W> {
                             ("name", emoji.name()),
                         ],
                     );
-                    self.writer.write_html(w, &rendered)?
+                    html::write_html(w, &rendered)?
                 }
-                None => self.writer.write_html(w, emoji.as_str())?,
+                None => html::write_html(w, emoji.as_str())?,
             }
         }
         Ok(WalkStatus::Continue)

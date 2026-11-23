@@ -84,7 +84,6 @@ I'm :joy:
         },
         emoji_parser_extension(EmojiParserOptions {
             blacklist: Some(bl.clone()),
-            ..Default::default()
         }),
         emoji_html_renderer_extension(EmojiHtmlRendererOptions::default()),
     );
@@ -118,7 +117,6 @@ I'm :joy:
             template: Some(String::from(
                 "<img src=\"https://image.example.com/{shortcode}.png\" />",
             )),
-            ..Default::default()
         }),
     );
     MarkdownTestCase::new(
